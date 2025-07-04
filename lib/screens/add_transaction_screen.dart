@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_financial_tracker_app/models/category_model.dart';
+import 'package:intl/intl.dart';
 import '../../models/transaction_model.dart';
 import '../../widgets/app_drawer.dart';
 
@@ -18,58 +19,66 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   String _selectedCategory = 'Misc';
   bool _isIncome = false;
 
-  final Box<CategoryModel>categoryBox=Hive.box<CategoryModel>('categories');
+  final Box<CategoryModel> categoryBox = Hive.box<CategoryModel>('categories');
+
 
   void _submitTransaction() async {
     try {
       if (_formKey.currentState!.validate()) {
-     final amount=double.tryParse(_amountController.text);
-     if(amount==null)return;
-     final box=Hive.box<TransactionModel>('transactions');
-     final allTransactions=box.values.toList();
+        final amount = double.tryParse(_amountController.text);
+        if (amount == null) return;
+        final box = Hive.box<TransactionModel>('transactions');
+        final allTransactions = box.values.toList();
         //  Calculate current balance
-        final totalIncome=allTransactions.where((tx)=>tx.isIncome).fold(0.0, (sum,tx)=>sum+tx.amount);
-        final totalExpense=allTransactions.where((tx)=>!tx.isIncome).fold(0.0, (sum,tx)=>sum+tx.amount);
-        final currentBalance=totalIncome-totalExpense;
+        final totalIncome = allTransactions
+            .where((tx) => tx.isIncome)
+            .fold(0.0, (sum, tx) => sum + tx.amount);
+        final totalExpense = allTransactions
+            .where((tx) => !tx.isIncome)
+            .fold(0.0, (sum, tx) => sum + tx.amount);
+        final currentBalance = totalIncome - totalExpense;
         // ✅ Prevent overspending
-        if(!_isIncome && amount> currentBalance){
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Not enough balance to add this expense.")));
+        if (!_isIncome && amount > currentBalance) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Not enough balance to add this expense.")));
 
-       return; }
+          return;
+        }
         // ✅ Continue adding/editing transaction
-        if(widget.transaction==null){
-          final transaction=TransactionModel(
+        if (widget.transaction == null) {
+          final transaction = TransactionModel(
               amount: amount,
               description: _descriptionController.text,
               category: _selectedCategory,
-             // date: DateTime(2025, 6, 10), //  June 10, 2025 (simulate last month)
+              // date: DateTime(2025, 6, 10), //  June 10, 2025 (simulate last month)
 
-               date: DateTime.now(),
-           //   date: DateTime.now().subtract(Duration(days: 32)), // force last month
-            //  date: DateTime(2025, 7, 10), date is hard coded
+              date: DateTime.now(),
+              // DateTime.now(),
+              //   date: DateTime.now().subtract(Duration(days: 32)), // force last month
+              //  date: DateTime(2025, 7, 10), date is hard coded
               isIncome: _isIncome);
           await box.add(transaction);
-        }
-        
-        else {
-          widget.transaction!..amount=amount
-              ..description=_descriptionController.text
-              ..category=_selectedCategory
-              ..isIncome=_isIncome
-              ..date= DateTime.now();
-            //  DateTime(2025, 7, 10);
-              //
+        } else {
+          widget.transaction!
+            ..amount = amount
+            ..description = _descriptionController.text
+            ..category = _selectedCategory
+            ..isIncome = _isIncome
+            ..date = DateTime.now();
+          //DateTime.now();
+          //  DateTime(2025, 7, 10);
+          //
           await widget.transaction!.save();
         }
-        if(!context.mounted)return;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:  Text("Transaction saved!")));
-
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Transaction saved!")));
       }
     } catch (e, stackTrace) {
       print("🚨 Error during transaction save: $e");
       print("🪵 StackTrace: $stackTrace");
 
-   //   if (!context.mounted) return;
+      //   if (!context.mounted) return;
 
       showDialog(
         context: context,
@@ -143,17 +152,19 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   void initState() {
     super.initState();
-     final tx=widget.transaction;
+    final tx = widget.transaction;
     if (tx != null) {
       _amountController.text = tx.amount.toString();
       _descriptionController.text = tx.description;
       _selectedCategory = tx.category;
       _isIncome = tx.isIncome;
+
     }
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(title: Text('Add Transaction')),
       drawer: AppDrawer(),
@@ -177,23 +188,25 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     labelText: 'Description',
                   ),
                   validator: (value) =>
-                  value!.isEmpty ? 'Enter description' : null,
+                      value!.isEmpty ? 'Enter description' : null,
                 ),
-               DropdownButtonFormField<String>(
-                 value: categoryBox.values.any((category)=>category.categoryName==_selectedCategory)
-                   ?_selectedCategory:categoryBox.values.isNotEmpty?categoryBox.values.first.categoryName:null,
-
-                   items: categoryBox.values.map((category){
-                     return DropdownMenuItem(
-                         value: category.categoryName,
-                         child: Text(category.categoryName));
-                   }).toList(),
-
-                   onChanged: (value){
-                   setState(() =>_selectedCategory=value!);
-                   },
-               decoration: InputDecoration(labelText:  'Category'),
-               ),
+                DropdownButtonFormField<String>(
+                  value: categoryBox.values.any((category) =>
+                          category.categoryName == _selectedCategory)
+                      ? _selectedCategory
+                      : categoryBox.values.isNotEmpty
+                          ? categoryBox.values.first.categoryName
+                          : null,
+                  items: categoryBox.values.map((category) {
+                    return DropdownMenuItem(
+                        value: category.categoryName,
+                        child: Text(category.categoryName));
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() => _selectedCategory = value!);
+                  },
+                  decoration: InputDecoration(labelText: 'Category'),
+                ),
 
                 /* DropdownButtonFormField<String>(
                   value: _selectedCategory,
@@ -205,6 +218,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   },
                   decoration: InputDecoration(labelText: 'Category'),
                 ),*/
+
                 SwitchListTile(
                   title: Text(_isIncome ? 'Income' : 'Expense'),
                   value: _isIncome,

@@ -17,30 +17,68 @@ import 'screens/analytics_screen.dart';
 import 'screens/category_screen.dart';
 import 'screens/dash_board_screen.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   var appDocDir = await getApplicationDocumentsDirectory();
   Hive.init(appDocDir.path);
+  // Register adapters
   Hive.registerAdapter(TransactionModelAdapter());
- // await Hive.deleteBoxFromDisk('transactions');
-  await Hive.openBox<TransactionModel>('transactions');
   Hive.registerAdapter(CategoryModelAdapter());
-  await Hive.openBox<CategoryModel>('categories');
-  var categoryBox=Hive.box<CategoryModel>('categories');
   Hive.registerAdapter(MonthlyReportModelAdapter());
+  // Optionally clear boxes for testing (uncomment only when needed)
+  await Hive.deleteBoxFromDisk('transactions');
+  await Hive.deleteBoxFromDisk('monthlyReports');
+  // Open boxes
+  await Hive.openBox<TransactionModel>('transactions');
+  await Hive.openBox<CategoryModel>('categories');
   await Hive.openBox<MonthlyReportModel>('monthlyReports');
-  if(categoryBox.isEmpty){
-    final defaultCategories=['Food', 'Salary', 'Travel', 'Shopping', 'Misc'];
-    for(var categoryName in defaultCategories){
+
+  var categoryBox = Hive.box<CategoryModel>('categories');
+  var transactionBox = Hive.box<TransactionModel>('transactions');
+
+
+  if (categoryBox.isEmpty) {
+    final defaultCategories = ['Food', 'Salary', 'Travel', 'Shopping', 'Misc'];
+    for (var categoryName in defaultCategories) {
       categoryBox.add(CategoryModel(categoryName: categoryName));
     }
+    print("Added default categories");
   }
+// Add test transactions for June 2025
 
-  runApp(
-      ChangeNotifierProvider(create: (_)=>ThemeProvider(),
-      child: const MyApp(),
+  /*if (transactionBox.isEmpty) {
+    await transactionBox.addAll([
+      TransactionModel(
+        amount: 5000,
+        description: 'Salary for June',
+        category: 'Salary',
+        date: DateTime(2025, 6, 10),
+        isIncome: true,
       ),
-      );
+      TransactionModel(
+        amount: 2000,
+        description: 'Grocery Shopping',
+        category: 'Food',
+        date: DateTime(2025, 6, 15),
+        isIncome: false,
+      ),
+      TransactionModel(
+        amount: 1000,
+        description: 'Travel Expense',
+        category: 'Travel',
+        date: DateTime(2025, 6, 20),
+        isIncome: false,
+      ),
+    ]);
+    print("Added test transactions for June 2025");
+
+  }*/
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -50,17 +88,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child){
-        return  MaterialApp(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
           title: 'Flutter Demo',
           debugShowCheckedModeBanner: false,
           theme: ThemeData.light(
 
-            /*colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              /*colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,*/
-          ),
+              ),
           darkTheme: ThemeData.dark(),
-          themeMode: themeProvider.isDark?ThemeMode.dark:ThemeMode.light,
+          themeMode: themeProvider.isDark ? ThemeMode.dark : ThemeMode.light,
           home: const AuthenticationScreen(),
           routes: {
             '/authScreen': (context) => AuthenticationScreen(),
@@ -75,7 +113,6 @@ class MyApp extends StatelessWidget {
           },
         );
       },
-
     );
   }
 }

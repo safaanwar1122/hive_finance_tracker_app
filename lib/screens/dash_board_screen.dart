@@ -67,7 +67,8 @@ transactionBox=Hive.box<TransactionModel>('transactions');
 
   }
 */
-  Future<void> _checkMonthChangeAndGenerateReport()async{
+
+ /* Future<void> _checkMonthChangeAndGenerateReport()async{
     final prefs=await SharedPreferences.getInstance();
     final lastCheckedMonth=prefs.getString('lastReportMonth');
     final now=DateTime.now();
@@ -106,6 +107,55 @@ final remainingBudget=(monthlyBudget-totalExpense).clamp(0.0, monthlyBudget);
       print("📅 TX: ${tx.category}, ${tx.amount}, ${tx.date}");
     });
 
+  }*/
+  Future<void> _checkMonthChangeAndGenerateReport() async {
+    final prefs = await SharedPreferences.getInstance();
+    final lastCheckedMonth = prefs.getString('lastReportMonth');
+    final now = DateTime.now();
+    final currentMonthKey = "${now.year}-${now.month.toString().padLeft(2, '0')}";
+
+    // For testing: Force report generation by ignoring lastCheckedMonth
+    // if (lastCheckedMonth == currentMonthKey) return; // Comment out for testing
+
+    final box = Hive.box<TransactionModel>('transactions');
+    final monthlyReportBox = Hive.box<MonthlyReportModel>('monthlyReports');
+    final prevMonth = DateTime(now.year, now.month - 1);
+    final prevMonthKey = "${prevMonth.year}-${prevMonth.month.toString().padLeft(2, '0')}";
+
+    // Filter transactions for the previous month
+    final previousMonthTransactions = box.values
+        .where((tx) => tx.date.year == prevMonth.year && tx.date.month == prevMonth.month)
+        .toList();
+
+    // Calculate totals
+    final totalIncome = previousMonthTransactions
+        .where((tx) => tx.isIncome)
+        .fold(0.0, (sum, tx) => sum + tx.amount);
+    final totalExpense = previousMonthTransactions
+        .where((tx) => !tx.isIncome)
+        .fold(0.0, (sum, tx) => sum + tx.amount);
+    final monthlyBudget = prefs.getDouble('monthlyBudget') ?? 0.0;
+    final remainingBudget = (monthlyBudget - totalExpense).clamp(0.0, monthlyBudget);
+
+    // Store in Hive monthly report box
+    await monthlyReportBox.put(
+      prevMonthKey,
+      MonthlyReportModel(
+        monthKey: prevMonthKey,
+        transactions: previousMonthTransactions,
+        income: totalIncome,
+        expense: totalExpense,
+        remainingBudget: remainingBudget,
+      ),
+    );
+
+    // Update last checked month
+    await prefs.setString('lastReportMonth', currentMonthKey);
+    print("Report for $prevMonthKey saved to monthlyReports box.");
+    print("📦 Total Transactions Found: ${previousMonthTransactions.length}");
+    previousMonthTransactions.forEach((tx) {
+      print("📅 TX: ${tx.category}, ${tx.amount}, ${tx.date}");
+    });
   }
   @override
   Widget build(BuildContext context) {

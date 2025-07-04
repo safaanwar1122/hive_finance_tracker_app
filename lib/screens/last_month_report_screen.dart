@@ -18,8 +18,28 @@ class _LastMonthReportScreenState extends State<LastMonthReportScreen> {
     super.initState();
     _loadLastMonthReport();
   }
-
   Future<void> _loadLastMonthReport() async {
+    final now = DateTime.now();
+    final prevMonth = DateTime(now.year, now.month - 1);
+    final prevMonthKey = "${prevMonth.year}-${prevMonth.month.toString().padLeft(2, '0')}";
+
+    final reportBox = Hive.box<MonthlyReportModel>('monthlyReports');
+    final report = reportBox.get(prevMonthKey);
+
+    // Debugging: Print all keys in monthlyReports box
+    print("📋 Available report keys: ${reportBox.keys}");
+    print("🔎 Trying to load report for $prevMonthKey");
+    print("Found report? ${report != null}");
+    if (report != null) {
+      print("📊 Report Details: Income: ${report.income}, Expense: ${report.expense}, "
+          "Transactions: ${report.transactions.length}");
+    }
+
+    setState(() {
+      _report = report;
+    });
+  }
+ /* Future<void> _loadLastMonthReport() async {
     final now = DateTime.now();
     final prevMonth = DateTime(now.year, now.month - 1);
     final prevMonthKey =
@@ -34,7 +54,7 @@ class _LastMonthReportScreenState extends State<LastMonthReportScreen> {
     print("🔎 Trying to load report for $prevMonthKey");
     print("Found report? ${report != null}");
 
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
