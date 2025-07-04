@@ -53,6 +53,11 @@ class AppDrawer extends StatelessWidget {
             onTap: () => Navigator.pushReplacementNamed(context, '/settings'),
           ),
           ListTile(
+            leading: Icon(Icons.report),
+            title: Text('Monthly Report  '),
+            onTap: () => Navigator.pushReplacementNamed(context,  '/monthlyReport'),
+          ),
+          ListTile(
             leading: Icon(Icons.backup),
             title: Text('BackUp/Restore '),
             onTap: () => Navigator.pushReplacementNamed(context, '/backup'),

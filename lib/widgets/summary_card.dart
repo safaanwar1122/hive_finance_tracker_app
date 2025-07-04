@@ -8,28 +8,32 @@ class SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final transactions = transactionBox.values.toList();
+ //   final transactions = transactionBox.values.toList();
+    final now = DateTime.now();
+    final transactions = transactionBox.values.where((tx) =>
+    tx.date.year == now.year && tx.date.month == now.month).toList();
+
     final totalIncome = transactions
         .where((tx) => tx.isIncome)
         .fold(0.0, (sum, tx) => sum + tx.amount);
     final totalExpense = transactions
         .where((tx) => !tx.isIncome)
         .fold(0.0, (sum, tx) => sum + tx.amount);
-    final balance = totalIncome - totalExpense;
+    final balance = (totalIncome - totalExpense).clamp(0.0, double.infinity);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
       child: Column(
         mainAxisAlignment:MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _buildSummaryTile(label: 'Balance', amount: balance, color: Colors.teal
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 10),
           _buildSummaryTile(label: 'Income', amount: totalIncome, color: Colors.green
           ),
-          SizedBox(height: 20),
-          _buildSummaryTile(label: 'Expense', amount: totalIncome, color: Colors.red
+          SizedBox(height: 10),
+          _buildSummaryTile(label: 'Expense', amount: totalExpense , color: Colors.red
           ),
 
         ],

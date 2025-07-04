@@ -23,44 +23,53 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   void _submitTransaction() async {
     try {
       if (_formKey.currentState!.validate()) {
-        final amount = double.tryParse(_amountController.text);
-        if (amount == null) return;
+     final amount=double.tryParse(_amountController.text);
+     if(amount==null)return;
+     final box=Hive.box<TransactionModel>('transactions');
+     final allTransactions=box.values.toList();
+        //  Calculate current balance
+        final totalIncome=allTransactions.where((tx)=>tx.isIncome).fold(0.0, (sum,tx)=>sum+tx.amount);
+        final totalExpense=allTransactions.where((tx)=>!tx.isIncome).fold(0.0, (sum,tx)=>sum+tx.amount);
+        final currentBalance=totalIncome-totalExpense;
+        // ✅ Prevent overspending
+        if(!_isIncome && amount> currentBalance){
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Not enough balance to add this expense.")));
 
-        final box = Hive.box<TransactionModel>('transactions');
+       return; }
+        // ✅ Continue adding/editing transaction
+        if(widget.transaction==null){
+          final transaction=TransactionModel(
+              amount: amount,
+              description: _descriptionController.text,
+              category: _selectedCategory,
+             // date: DateTime(2025, 6, 10), //  June 10, 2025 (simulate last month)
 
-        if (widget.transaction == null) {
-          final transaction = TransactionModel(
-            amount: amount,
-            description: _descriptionController.text,
-            category: _selectedCategory,
-          // date: DateTime.now().subtract(Duration(days: 1)),
-            date: DateTime.now(),
-            isIncome: _isIncome,
-          );
+               date: DateTime.now(),
+           //   date: DateTime.now().subtract(Duration(days: 32)), // force last month
+            //  date: DateTime(2025, 7, 10), date is hard coded
+              isIncome: _isIncome);
           await box.add(transaction);
-        } else {
-          widget.transaction!
-            ..amount = amount
-            ..description = _descriptionController.text
-            ..category = _selectedCategory
-            ..isIncome = _isIncome
-            ..date = DateTime.now();
+        }
+        
+        else {
+          widget.transaction!..amount=amount
+              ..description=_descriptionController.text
+              ..category=_selectedCategory
+              ..isIncome=_isIncome
+              ..date= DateTime.now();
+            //  DateTime(2025, 7, 10);
+              //
           await widget.transaction!.save();
         }
+        if(!context.mounted)return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:  Text("Transaction saved!")));
 
-        if (!context.mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Transaction saved!")),
-        );
-
-       // Navigator.of(context).pop();
       }
     } catch (e, stackTrace) {
       print("🚨 Error during transaction save: $e");
       print("🪵 StackTrace: $stackTrace");
 
-      if (!context.mounted) return;
+   //   if (!context.mounted) return;
 
       showDialog(
         context: context,

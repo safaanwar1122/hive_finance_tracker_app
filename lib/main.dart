@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_financial_tracker_app/models/category_model.dart';
+import 'package:hive_financial_tracker_app/models/monthly_report_model.dart';
 import 'package:hive_financial_tracker_app/models/transaction_model.dart';
 import 'package:hive_financial_tracker_app/screens/auth_screen.dart';
 import 'package:hive_financial_tracker_app/screens/backuo_restore_screen.dart';
+import 'package:hive_financial_tracker_app/screens/last_month_report_screen.dart';
 import 'package:hive_financial_tracker_app/screens/settings_screen.dart';
 import 'package:hive_financial_tracker_app/screens/transaction_list_screen.dart';
 import 'package:hive_financial_tracker_app/viewmodel_controller/theme_provider.dart';
@@ -25,6 +27,8 @@ void main() async{
   Hive.registerAdapter(CategoryModelAdapter());
   await Hive.openBox<CategoryModel>('categories');
   var categoryBox=Hive.box<CategoryModel>('categories');
+  Hive.registerAdapter(MonthlyReportModelAdapter());
+  await Hive.openBox<MonthlyReportModel>('monthlyReports');
   if(categoryBox.isEmpty){
     final defaultCategories=['Food', 'Salary', 'Travel', 'Shopping', 'Misc'];
     for(var categoryName in defaultCategories){
@@ -67,6 +71,7 @@ class MyApp extends StatelessWidget {
             '/analytics': (context) => AnalyticsScreen(),
             '/settings': (context) => SettingsScreen(),
             '/backup': (context) => BackupRestoreScreen(),
+            '/monthlyReport': (context) => LastMonthReportScreen(),
           },
         );
       },

@@ -46,6 +46,7 @@ dependencies:
   shared_preferences: ^2.2.2
   provider: ^6.1.5
   local_auth:
+  flutter_screenutil:
 
 dev_dependencies:
   build_runner: ^2.4.13
