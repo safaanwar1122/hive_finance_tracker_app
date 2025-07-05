@@ -58,6 +58,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               //  date: DateTime(2025, 7, 10), date is hard coded
               isIncome: _isIncome);
           await box.add(transaction);
+          print("✅ Transaction saved: ${transaction.category}, ${transaction.amount}, ${transaction.date}");
         } else {
           widget.transaction!
             ..amount = amount
@@ -69,10 +70,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           //  DateTime(2025, 7, 10);
           //
           await widget.transaction!.save();
+          print("✅ Transaction updated: ${widget.transaction!.category}, ${widget.transaction!.amount}, ${widget.transaction!.date}");
         }
+        print("📦 All transactions in box: ${box.values.length}");
+        box.values.forEach((tx) {
+          print("📅 TX: ${tx.category}, ${tx.amount}, ${tx.date}");
+        });
         if (!context.mounted) return;
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("Transaction saved!")));
+
       }
     } catch (e, stackTrace) {
       print("🚨 Error during transaction save: $e");

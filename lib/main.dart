@@ -6,6 +6,7 @@ import 'package:hive_financial_tracker_app/models/transaction_model.dart';
 import 'package:hive_financial_tracker_app/screens/auth_screen.dart';
 import 'package:hive_financial_tracker_app/screens/backuo_restore_screen.dart';
 import 'package:hive_financial_tracker_app/screens/last_month_report_screen.dart';
+import 'package:hive_financial_tracker_app/screens/recent_report_screen.dart';
 import 'package:hive_financial_tracker_app/screens/settings_screen.dart';
 import 'package:hive_financial_tracker_app/screens/transaction_list_screen.dart';
 import 'package:hive_financial_tracker_app/viewmodel_controller/theme_provider.dart';
@@ -26,8 +27,8 @@ void main() async {
   Hive.registerAdapter(CategoryModelAdapter());
   Hive.registerAdapter(MonthlyReportModelAdapter());
   // Optionally clear boxes for testing (uncomment only when needed)
-  await Hive.deleteBoxFromDisk('transactions');
-  await Hive.deleteBoxFromDisk('monthlyReports');
+  //await Hive.deleteBoxFromDisk('transactions');
+  //await Hive.deleteBoxFromDisk('monthlyReports');
   // Open boxes
   await Hive.openBox<TransactionModel>('transactions');
   await Hive.openBox<CategoryModel>('categories');
@@ -35,7 +36,6 @@ void main() async {
 
   var categoryBox = Hive.box<CategoryModel>('categories');
   var transactionBox = Hive.box<TransactionModel>('transactions');
-
 
   if (categoryBox.isEmpty) {
     final defaultCategories = ['Food', 'Salary', 'Travel', 'Shopping', 'Misc'];
@@ -46,33 +46,32 @@ void main() async {
   }
 //Add test transactions for June 2025
 
-  if (transactionBox.isEmpty) {
+ /* if (transactionBox.isEmpty) {
     await transactionBox.addAll([
       TransactionModel(
         amount: 5000,
-        description: 'Salary for June',
+        description: 'Salary for July',
         category: 'Salary',
-        date: DateTime(2025, 6, 10),
+        date: DateTime.now().subtract(const Duration(minutes: 1)),
         isIncome: true,
       ),
       TransactionModel(
         amount: 2000,
         description: 'Grocery Shopping',
         category: 'Food',
-        date: DateTime(2025, 6, 15),
+        date: DateTime.now().subtract(const Duration(minutes: 1, seconds: 30)),
         isIncome: false,
       ),
       TransactionModel(
         amount: 1000,
         description: 'Travel Expense',
         category: 'Travel',
-        date: DateTime(2025, 6, 20),
+        date: DateTime.now().subtract(const Duration(seconds: 30)),
         isIncome: false,
       ),
     ]);
     print("Added test transactions for June 2025");
-
-  }
+  }*/
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),
@@ -94,9 +93,9 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: ThemeData.light(
 
-            /*colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              /*colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,*/
-          ),
+              ),
           darkTheme: ThemeData.dark(),
           themeMode: themeProvider.isDark ? ThemeMode.dark : ThemeMode.light,
           home: const AuthenticationScreen(),
@@ -109,7 +108,7 @@ class MyApp extends StatelessWidget {
             '/analytics': (context) => AnalyticsScreen(),
             '/settings': (context) => SettingsScreen(),
             '/backup': (context) => BackupRestoreScreen(),
-            '/monthlyReport': (context) => LastMonthReportScreen(),
+            '/monthlyReport': (context) => RecentReportScreen(),
           },
         );
       },
