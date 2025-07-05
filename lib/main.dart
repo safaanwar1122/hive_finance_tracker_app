@@ -44,9 +44,9 @@ void main() async {
     }
     print("Added default categories");
   }
-// Add test transactions for June 2025
+//Add test transactions for June 2025
 
-  /*if (transactionBox.isEmpty) {
+  if (transactionBox.isEmpty) {
     await transactionBox.addAll([
       TransactionModel(
         amount: 5000,
@@ -72,7 +72,7 @@ void main() async {
     ]);
     print("Added test transactions for June 2025");
 
-  }*/
+  }
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),
@@ -94,9 +94,9 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: ThemeData.light(
 
-              /*colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            /*colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,*/
-              ),
+          ),
           darkTheme: ThemeData.dark(),
           themeMode: themeProvider.isDark ? ThemeMode.dark : ThemeMode.light,
           home: const AuthenticationScreen(),

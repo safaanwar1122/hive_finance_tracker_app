@@ -96,59 +96,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     }
   }
 
-  /*void _submitTransaction() async {
-    if (_formKey.currentState!.validate()) {
-      final amount = double.tryParse(_amountController.text);
-      if (amount == null) return;
-
-      final box = Hive.box<TransactionModel>('transactions');
-      try{
-        if (widget.transaction == null) {
-          // Add new transaction
-          final transaction = TransactionModel(
-              amount: amount,
-              description: _descriptionController.text,
-              category: _selectedCategory,
-              date: DateTime.now().subtract(Duration(days: 1)),
-
-              // date: DateTime.now(),
-              isIncome: _isIncome);
-          await box.add(transaction);
-        } else {
-          // Edit existing transaction
-          widget.transaction!
-            ..amount = amount
-            ..description = _descriptionController.text
-            ..category = _selectedCategory
-            ..isIncome = _isIncome
-            ..date = DateTime.now();
-          await widget.transaction!.save();
-        }
-        if(!context.mounted)return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content:Text("Transaction saved!"), ));
-        await Future.delayed(Duration(milliseconds: 200));
-        Navigator.of(context).pop();
-        print("🧾 Saving transaction:");
-        print("Amount: $amount");
-        print("Desc: ${_descriptionController.text}");
-        print("Category: $_selectedCategory");
-        print("Date: ${DateTime.now()}");
-        print("Income: $_isIncome");
-
-      }
-      catch(e, stackTrace){
-        print('Error saving transaction:$e');
-        print("🪵 Stack trace: $stackTrace");
-        if(!context.mounted)return;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed to save transaction.")));
-      }
-    }
-
-
-  }*/
-
   @override
   void initState() {
     super.initState();
@@ -188,15 +135,15 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     labelText: 'Description',
                   ),
                   validator: (value) =>
-                      value!.isEmpty ? 'Enter description' : null,
+                  value!.isEmpty ? 'Enter description' : null,
                 ),
                 DropdownButtonFormField<String>(
                   value: categoryBox.values.any((category) =>
-                          category.categoryName == _selectedCategory)
+                  category.categoryName == _selectedCategory)
                       ? _selectedCategory
                       : categoryBox.values.isNotEmpty
-                          ? categoryBox.values.first.categoryName
-                          : null,
+                      ? categoryBox.values.first.categoryName
+                      : null,
                   items: categoryBox.values.map((category) {
                     return DropdownMenuItem(
                         value: category.categoryName,

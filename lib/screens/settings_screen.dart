@@ -20,7 +20,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     _loadBudget();
   }
-  
+
   void _loadBudget()async{
     final prefs=await SharedPreferences.getInstance();
     final budget = prefs.getDouble('monthlyBudget')??0.0;
@@ -42,27 +42,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
       drawer: AppDrawer(),
       body:Padding(padding: const EdgeInsets.all(16.0),
 
-      child: Column(
-        children: [
-          SwitchListTile (
-            title: Text('Set Theme'),
-            value: context.watch<ThemeProvider>().isDark,
-            onChanged: ( value) {
-              context.read<ThemeProvider>().toggleTheme(value);
-            },
-          ),
-          SizedBox(height: 20,),
-          TextField(
-            controller: _budgetController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: "Monthly Budget",
+        child: Column(
+          children: [
+            SwitchListTile (
+              title: Text('Set Theme'),
+              value: context.watch<ThemeProvider>().isDark,
+              onChanged: ( value) {
+                context.read<ThemeProvider>().toggleTheme(value);
+              },
             ),
-          ),
-          SizedBox(height: 20,),
-          ElevatedButton(onPressed: _saveBudget, child: Text("Save Budget"),),
-        ],
-      ),),
+            SizedBox(height: 20,),
+            TextField(
+              controller: _budgetController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: "Monthly Budget",
+              ),
+            ),
+            SizedBox(height: 20,),
+            ElevatedButton(onPressed: _saveBudget, child: Text("Save Budget"),),
+          ],
+        ),),
     );
   }
 }

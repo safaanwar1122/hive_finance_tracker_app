@@ -39,7 +39,7 @@ class _LastMonthReportScreenState extends State<LastMonthReportScreen> {
       _report = report;
     });
   }
- /* Future<void> _loadLastMonthReport() async {
+  /* Future<void> _loadLastMonthReport() async {
     final now = DateTime.now();
     final prevMonth = DateTime(now.year, now.month - 1);
     final prevMonthKey =
