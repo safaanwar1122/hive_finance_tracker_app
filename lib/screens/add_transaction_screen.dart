@@ -161,18 +161,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   },
                   decoration: InputDecoration(labelText: 'Category'),
                 ),
-
-                /* DropdownButtonFormField<String>(
-                  value: _selectedCategory,
-                  items: categoryBox.values.map((cat) {
-                    return DropdownMenuItem(value: cat.categoryName, child: Text(cat.categoryName));
-                  }).toList(),
-                  onChanged: (val) {
-                    setState(() => _selectedCategory = val!);
-                  },
-                  decoration: InputDecoration(labelText: 'Category'),
-                ),*/
-
                 SwitchListTile(
                   title: Text(_isIncome ? 'Income' : 'Expense'),
                   value: _isIncome,
