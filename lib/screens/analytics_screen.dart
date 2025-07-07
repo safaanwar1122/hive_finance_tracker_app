@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_financial_tracker_app/models/transaction_model.dart';
 import 'package:hive_financial_tracker_app/widgets/app_drawer.dart';
 import 'package:pie_chart/pie_chart.dart' as pie; // 👈 give prefix for pie_chart
 import 'package:fl_chart/fl_chart.dart';
+
+import '../adapter_models/transaction_model.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});

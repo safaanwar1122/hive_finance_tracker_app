@@ -18,7 +18,7 @@ class AuthService {
         options: AuthenticationOptions(
           biometricOnly: false, // allow PIN/pattern fallback
           stickyAuth:
-              true, // maintains auth state if app is paused,Useful for long sessions or app switching
+          true, // maintains auth state if app is paused,Useful for long sessions or app switching
           useErrorDialogs: true, // shows native Android error dialogs
         ),
       );

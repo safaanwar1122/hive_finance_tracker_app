@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_financial_tracker_app/models/category_model.dart';
 import 'package:hive_financial_tracker_app/screens/transaction_list_screen.dart';
 import 'package:hive_financial_tracker_app/widgets/app_drawer.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
+import '../adapter_models/category_model.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({super.key});

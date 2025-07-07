@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_financial_tracker_app/widgets/summary_card.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/transaction_model.dart';
+import '../adapter_models/transaction_model.dart';
 import '../widgets/app_drawer.dart';
 import 'package:intl/intl.dart';
 

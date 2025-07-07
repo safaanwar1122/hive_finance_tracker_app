@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_financial_tracker_app/models/category_model.dart';
-import 'package:hive_financial_tracker_app/models/monthly_report_model.dart';
-import 'package:hive_financial_tracker_app/models/transaction_model.dart';
 import 'package:hive_financial_tracker_app/screens/auth_screen.dart';
 import 'package:hive_financial_tracker_app/screens/backuo_restore_screen.dart';
-import 'package:hive_financial_tracker_app/screens/last_month_report_screen.dart';
 import 'package:hive_financial_tracker_app/screens/recent_report_screen.dart';
 import 'package:hive_financial_tracker_app/screens/settings_screen.dart';
 import 'package:hive_financial_tracker_app/screens/transaction_list_screen.dart';
+import 'package:hive_financial_tracker_app/view_model/auth_dir/finance_provider.dart';
 import 'package:hive_financial_tracker_app/viewmodel_controller/theme_provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
+import 'adapter_models/category_model.dart';
+import 'adapter_models/monthly_report_model.dart';
+import 'adapter_models/transaction_model.dart';
 import 'screens/add_transaction_screen.dart';
 import 'screens/analytics_screen.dart';
 import 'screens/category_screen.dart';
@@ -46,7 +46,7 @@ void main() async {
   }
 //Add test transactions for June 2025
 
- /* if (transactionBox.isEmpty) {
+  /* if (transactionBox.isEmpty) {
     await transactionBox.addAll([
       TransactionModel(
         amount: 5000,
@@ -72,10 +72,18 @@ void main() async {
     ]);
     print("Added test transactions for June 2025");
   }*/
-  runApp(
+/*  runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),
       child: const MyApp(),
+    ),
+  );*/
+  runApp(
+    MultiProvider(providers: [
+      ChangeNotifierProvider(create: (_)=>ThemeProvider()),
+      ChangeNotifierProvider(create: (_)=>FinanceTrackerProvider()),
+    ],
+    child: const MyApp(),
     ),
   );
 }
@@ -86,7 +94,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
- //   final transactionBox=Hive.box<TransactionModel>('transactions');
+    //   final transactionBox=Hive.box<TransactionModel>('transactions');
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(

@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_financial_tracker_app/models/monthly_report_model.dart';
-import 'package:hive_financial_tracker_app/models/transaction_model.dart';
-import 'package:hive_financial_tracker_app/screens/category_screen.dart';
 import 'package:hive_financial_tracker_app/widgets/app_drawer.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../auth_dir/auth_service.dart';
+import '../adapter_models/monthly_report_model.dart';
+import '../adapter_models/transaction_model.dart';
+import '../view_model/auth_dir/auth_service.dart';
 import '../widgets/summary_card.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -81,7 +79,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 // Store the current report's remaining budget and set reportGenerated flag
     // Store the current report's remaining budget in SharedPreferences
     await prefs.setDouble('latestReportBalance', remainingBudget);
-   // await prefs.setBool('reportGenerated', true); // Set flag to true
+    // await prefs.setBool('reportGenerated', true); // Set flag to true
     print("💰 Set latest report balance: $remainingBudget");
 
     // Clear all transactions from the transactions box
@@ -131,7 +129,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               SummaryCard(transactionBox: transactionBox),
               Row(
                 children: [
-                 /* TextButton(
+                  /* TextButton(
                     onPressed: () async {
                       await _checkTimeChangeAndGenerateReport();
                       if (mounted) {
