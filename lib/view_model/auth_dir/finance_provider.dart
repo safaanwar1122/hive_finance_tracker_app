@@ -118,6 +118,59 @@ class FinanceTrackerProvider extends ChangeNotifier {
       );
     }
   }
+  Future<void> loadReports() async {
+    final reportBox = Hive.box<MonthlyReportModel>('monthlyReports');
+
+    // Clean up old _5minutes reports
+    final oldKeys = reportBox.keys
+        .where((key) => key.toString().endsWith('_5minutes'))
+        .toList();
+    for (var key in oldKeys) {
+      await reportBox.delete(key);
+      print("🗑️ Deleted old report: $key");
+    }
+
+    // Get all reports with _2minutes suffix, sorted by timestamp
+    final reportKeys = reportBox.keys
+        .where((key) => key.toString().endsWith('_2minutes'))
+        .toList();
+
+    List<MapEntry<String, MonthlyReportModel>> sortedReports = [];
+    for (var key in reportKeys) {
+      try {
+        final report = reportBox.get(key);
+        if (report != null) {
+          sortedReports.add(MapEntry(key, report));
+        }
+      } catch (e) {
+        print("Error loading report for key $key: $e");
+      }
+    }
+
+    // Sort reports by timestamp (most recent first)
+    sortedReports.sort((a, b) {
+      final aParts = a.key.split('_');
+      final bParts = b.key.split('_');
+      if (aParts.length != 3 || bParts.length != 3) return 0;
+      final aTime =
+      DateTime.parse("${aParts[0]} ${aParts[1].replaceAll('-', ':')}:00");
+      final bTime =
+      DateTime.parse("${bParts[0]} ${bParts[1].replaceAll('-', ':')}:00");
+      return bTime.compareTo(aTime); // Descending order (newest first)
+    });
+
+    final reports = sortedReports.map((entry) => entry.value).toList();
+
+    print("📋 Available report keys: ${reportBox.keys}");
+    for (var report in reports) {
+      print("📊 Report ${report.monthKey}: Income: ${report.income}, "
+          "Expense: ${report.expense}, Transactions: ${report.transactions.length}, "
+          "Remaining: ${report.remainingBudget}");
+    }
+
+    _reports = reports;
+    notifyListeners();
+  }
 
   void startReportGenerationTimer(BuildContext context) {
     // Generate report immediately on init
@@ -206,59 +259,6 @@ class FinanceTrackerProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> loadReports() async {
-    final reportBox = Hive.box<MonthlyReportModel>('monthlyReports');
-
-    // Clean up old _5minutes reports
-    final oldKeys = reportBox.keys
-        .where((key) => key.toString().endsWith('_5minutes'))
-        .toList();
-    for (var key in oldKeys) {
-      await reportBox.delete(key);
-      print("🗑️ Deleted old report: $key");
-    }
-
-    // Get all reports with _2minutes suffix, sorted by timestamp
-    final reportKeys = reportBox.keys
-        .where((key) => key.toString().endsWith('_2minutes'))
-        .toList();
-
-    List<MapEntry<String, MonthlyReportModel>> sortedReports = [];
-    for (var key in reportKeys) {
-      try {
-        final report = reportBox.get(key);
-        if (report != null) {
-          sortedReports.add(MapEntry(key, report));
-        }
-      } catch (e) {
-        print("Error loading report for key $key: $e");
-      }
-    }
-
-    // Sort reports by timestamp (most recent first)
-    sortedReports.sort((a, b) {
-      final aParts = a.key.split('_');
-      final bParts = b.key.split('_');
-      if (aParts.length != 3 || bParts.length != 3) return 0;
-      final aTime =
-          DateTime.parse("${aParts[0]} ${aParts[1].replaceAll('-', ':')}:00");
-      final bTime =
-          DateTime.parse("${bParts[0]} ${bParts[1].replaceAll('-', ':')}:00");
-      return bTime.compareTo(aTime); // Descending order (newest first)
-    });
-
-    final reports = sortedReports.map((entry) => entry.value).toList();
-
-    print("📋 Available report keys: ${reportBox.keys}");
-    for (var report in reports) {
-      print("📊 Report ${report.monthKey}: Income: ${report.income}, "
-          "Expense: ${report.expense}, Transactions: ${report.transactions.length}, "
-          "Remaining: ${report.remainingBudget}");
-    }
-
-    _reports = reports;
-    notifyListeners();
-  }
 
   Future<double> getCumulativeBalance() async {
     final reportBox = Hive.box<MonthlyReportModel>('monthlyReports');

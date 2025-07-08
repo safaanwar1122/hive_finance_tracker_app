@@ -118,8 +118,12 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.search),
                       ),
+
                       onChanged: (val) =>
-                          setState(() => _searchText = val.toLowerCase()),
+
+                          setState(() => _searchText = val.toLowerCase(),
+
+                          ),
                     ),
                     Row(
                       children: [
